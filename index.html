@@ -8,8 +8,9 @@
   body{margin:0;min-height:100vh;display:grid;place-items:center;background:#EFEAE1;color:#5F5A52;
     font:14px/1.5 -apple-system,"Helvetica Neue",system-ui,sans-serif;text-align:center;padding:0 24px}
   a{color:#1D1B18;text-underline-offset:3px}
+  .btn{display:inline-block;margin:14px 0 10px;background:#1D1B18;color:#F7F4EE;text-decoration:none;font-weight:500;padding:11px 20px;border-radius:999px}
 </style>
-<p id="msg">Opening Spotify…</p>
+<div><a class="btn" id="open" hidden>Open in Spotify</a><p id="msg">Opening Spotify…</p></div>
 <script>
   // Album Shelf hands albums to the Spotify app from here, because its own sandboxed frame can't.
   const id = (new URLSearchParams(location.search).get("album") || "").replace(/[^A-Za-z0-9]/g, "");
@@ -17,12 +18,12 @@
   if (!id) {
     msg.textContent = "No album given.";
   } else {
-    const web = "https://open.spotify.com/album/" + id;
-    addEventListener("blur", () => setTimeout(() => window.close(), 400)); // the app took focus
-    location.href = "spotify:album:" + id;
-    setTimeout(() => {
-      msg.innerHTML = 'Spotify opened? You can close this tab.<br>If not, <a href="' + web + '">open the web player</a>.';
-    }, 1500);
+    const web = "https://open.spotify.com/album/" + id, app = "spotify:album:" + id;
+    // Never close the tab ourselves: Safari's "Open Spotify?" prompt also takes focus.
+    location.href = app;
+    const open = document.getElementById("open");
+    open.href = app; open.hidden = false;
+    msg.innerHTML = 'Once Spotify is open, you can close this tab.<br><a href="' + web + '">Web player instead</a>';
   }
 </script>
 </html>
